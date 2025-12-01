@@ -1,20 +1,12 @@
-# ① ビルド用イメージ（Java + Gradle が入っている）
+# ① ビルド用イメージ
 FROM gradle:8.12-jdk21 AS build
-# アプリを置く作業フォルダ
 WORKDIR /app
-# プロジェクトのファイルを全部コピー
 COPY . .
-# jar ファイルを作る（テストは実行しない）
-# gradlew に実行権限を付与
 RUN chmod +x ./gradlew
+RUN ./gradlew bootJar --no-daemon -x test
 
-# Spring Boot の jar をビルド
-RUN ./gradlew bootJar --no-daemon
-
-# ② 実行用イメージ（Java 実行だけできれば良い）
+# ② 実行用イメージ
 FROM eclipse-temurin:21-jre
 WORKDIR /app
-# ビルドで作った jar をコピー
 COPY --from=build /app/build/libs/*.jar app.jar
-# アプリを起動
 ENTRYPOINT ["java", "-jar", "app.jar"]
