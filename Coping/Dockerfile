@@ -5,7 +5,12 @@ WORKDIR /app
 # プロジェクトのファイルを全部コピー
 COPY . .
 # jar ファイルを作る（テストは実行しない）
-RUN chmod +x ./gradlew bootJar --no-daemon
+# gradlew に実行権限を付与
+RUN chmod +x ./gradlew
+
+# Spring Boot の jar をビルド
+RUN ./gradlew bootJar --no-daemon
+
 # ② 実行用イメージ（Java 実行だけできれば良い）
 FROM eclipse-temurin:21-jre
 WORKDIR /app
